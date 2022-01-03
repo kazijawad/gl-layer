@@ -1,0 +1,16 @@
+{
+    "name": "gl-layer",
+    "description": "A minimal WebGL helper library.",
+    "version": "0.0.1",
+    "license": "MIT",
+    "author": "Kazi Jawad",
+    "main": "src/index.js",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/kazijawad/gl-layer.git"
+    },
+    "bugs": {
+        "url": "https://github.com/kazijawad/gl-layer/issues"
+    },
+    "homepage": "https://github.com/kazijawad/gl-layer#readme"
+}
