@@ -22,13 +22,13 @@ export class Renderer {
             console.error('Failed to create WebGL context.');
         }
 
-        this._createState();
+        this.createState();
 
         this.setSize(width, height);
         this.setViewport(this.gl.canvas.width, this.gl.canvas.height);
     }
 
-    _createState() {
+    createState() {
         this.state = new Proxy({}, {
             set: async (target, key, value) => {
                 target[key] = value;
@@ -60,5 +60,13 @@ export class Renderer {
 
     setViewport(width, height) {
         this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
+    }
+
+    render(program) {
+        for (const attribute of program.attributes) {
+            const { location, size, type, normalized, stride, offset } = attribute[1];
+            program.gl.enableVertexAttribArray(location);
+            program.gl.vertexAttribPointer(location, size, type, normalized, stride, offset);
+        }
     }
 }

@@ -1,23 +1,36 @@
 export class Program {
     constructor({
         gl,
+        attributes,
+        uniforms,
         vertex,
         fragment
     }) {
+        this.attributes = new Map();
+        this.uniforms = new Map();
+
         this.gl = gl;
         if (!this.gl && !this.gl.canvas) {
             console.error('Failed to load WebGL context.');
         }
 
-        this.vertex = this._createShader(gl.VERTEX_SHADER, vertex);
-        this.fragment = this._createShader(gl.FRAGMENT_SHADER, fragment);
+        this.vertex = this.createShader(gl.VERTEX_SHADER, vertex);
+        this.fragment = this.createShader(gl.FRAGMENT_SHADER, fragment);
 
-        this.program = this._createProgram();
+        this.program = this.createProgram();
 
         this.gl.useProgram(this.program);
+
+        if (attributes) {
+            this.setAttributes(attributes);
+        }
+
+        if (uniforms) {
+            this.setUniforms(uniforms);
+        }
     }
 
-    _createShader(type, source) {
+    createShader(type, source) {
         const shader = this.gl.createShader(type);
         this.gl.shaderSource(shader, source);
         this.gl.compileShader(shader);
@@ -31,7 +44,7 @@ export class Program {
         this.gl.deleteShader(shader);
     }
 
-    _createProgram() {
+    createProgram() {
         const program = this.gl.createProgram();
         this.gl.attachShader(program, this.vertex);
         this.gl.attachShader(program, this.fragment);
@@ -46,56 +59,73 @@ export class Program {
         this.gl.deleteProgram(program);
     }
 
-    setAttribute({
-        name,
-        data,
-        size,
-        usage = this.gl.STATIC_DRAW,
-    }) {
-        const location = this.gl.getAttribLocation(this.program, name);
-        this.gl.enableVertexAttribArray(location);
-
-        const buffer = this.gl.createBuffer();
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
-
-        if (Array.isArray(data)) {
-            data = new Float32Array(data);
+    setAttributes(attributes) {
+        if (!attributes || Array.isArray(attributes) || typeof attributes !== 'object') {
+            throw new Error('Program.setAttributes — expected object of attributes.');
         }
 
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, data, this.gl.STATIC_DRAW);
+        for (const name of Object.keys(attributes)) {
+            const properties = attributes[name];
 
-        this.gl.vertexAttribPointer(location, size, this.gl.FLOAT, false, 0, 0);
-    }
-
-    setUniform({
-        name,
-        data
-    }) {
-        const location = this.gl.getUniformLocation(this.program, name);
-
-        let method = 'uniform';
-        if (Array.isArray(data)) {
-            method += data.length;
-
-            const ints = data.filter(Number.isInteger);
-            if (ints.length !== data.length) {
-                method += 'f';
-            } else {
-                data = data.map(Number);
-                method += 'i';
+            let data = properties.data || properties;
+            if (Array.isArray(data)) {
+                data = new Float32Array(data);
             }
 
-            this.gl[method](location, ...data);
-        } else if (data instanceof Float32Array) {
-            method += data.length;
-            method += 'fv';
-            this.gl[method](location, data);
-        } else if (data instanceof Int32Array) {
-            method += data.length;
-            method += 'iv';
-            this.gl[method](location, data);
-        } else {
-            console.error('Invalid data format.');
+            if (!ArrayBuffer.isView(data)) {
+                throw new Error(`Program.setAttributes — ${name} does not provide a valid data type.`);
+            }
+
+            const buffer = this.gl.createBuffer();
+            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
+            this.gl.bufferData(this.gl.ARRAY_BUFFER, data, this.gl.STATIC_DRAW);
+
+            const location = this.gl.getAttribLocation(this.program, name);
+            this.attributes.set(name, {
+                location,
+                size: properties.size || 2,
+                type: properties.type || this.gl.FLOAT,
+                normalized: properties.normalized || false,
+                stride: properties.stride || 0,
+                offset: properties.offset || 0,
+            });
+        }
+    }
+
+    setUniforms(uniforms) {
+        if (!uniforms || Array.isArray(uniforms) || typeof uniforms !== 'object') {
+            throw new Error('Program.setUniforms — expected object of uniforms.');
+        }
+
+        for (const name of Object.keys(uniforms)) {
+            const location = this.gl.getUniformLocation(this.program, name);
+
+            let data = uniforms[name];
+            if (typeof data === 'number') {
+                data = [data];
+            }
+
+            let method = 'uniform';
+            if (Array.isArray(data)) {
+                data = data.map((x) => Number.parseFloat(x).toFixed(2)).map(Number)
+
+                method += data.length;
+                method += 'f';
+
+                this.gl[method](location, ...data);
+            } else if (data instanceof Float32Array) {
+                method += data.length;
+                method += 'fv';
+                this.gl[method](location, data);
+            } else if (data instanceof Int32Array) {
+                method += data.length;
+                method += 'iv';
+                this.gl[method](location, data);
+            } else {
+                console.error(`Program.setUniforms — invalid data format for ${name}.`);
+            }
+
+            this.uniforms.set(name, { data });
         }
     }
 }
