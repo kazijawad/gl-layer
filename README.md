@@ -5,7 +5,9 @@ A minimal WebGL helper library.
 ## Getting Started
 
 ```JavaScript
-import { Renderer, Program } from 'gl-layer';
+import { Renderer, Program, Clock } from 'gl-layer';
+
+const clock = new Clock();
 
 const renderer = new Renderer({
     canvas: document.querySelector('.stage'),
@@ -21,49 +23,39 @@ gl.clear(gl.COLOR_BUFFER_BIT);
 const program = new Program({
     gl,
     attributes: {
-        position: [-0.25, -0.25, 0, 0.50, 0.25, -0.25,],
+        position: [-0.25, -0.25, 0, 0.50, 0.25, -0.25],
     },
     uniforms: {
-        uColor: [0.5, 0.5, 0.5, 1.0],
-        uTime: performance.now(),
+        uColor: [1.0, 1.0, 1.0],
+        uTime: clock.time,
     },
     vertex: `
         attribute vec4 position;
-        attribute vec2 texCoord;
-
-        varying vec4 vColor;
-        varying vec2 vTexCoord;
 
         void main() {
             gl_Position = position;
-            vColor = gl_Position * 0.5 + 0.5;
-            vTexCoord = texCoord;
         }
     `,
     fragment: `
         precision mediump float;
 
-        uniform vec4 uColor;
+        uniform vec3 uColor;
         uniform float uTime;
-        uniform sampler2D uImage;
-
-        varying vec4 vColor;
-        varying vec2 vTexCoord;
 
         void main() {
-            gl_FragColor = mix(vColor, uColor, sin(uTime * 0.001));
+            gl_FragColor = vec4(vec3(sin(uTime), 0.5, cos(uTime)) * uColor, 1.0);
         }
     `,
 });
 
-function loop() {
-    program.setUniforms({ uTime: performance.now() });
+function render() {
+    program.setUniforms({ uTime: clock.time })
     renderer.render(program);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
-    requestAnimationFrame(loop);
+    requestAnimationFrame(render);
 }
 
-loop();
+render();
 ```
 
 ## Author
