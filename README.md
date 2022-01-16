@@ -50,8 +50,7 @@ const program = new Program({
 
 function render() {
     program.setUniforms({ uTime: clock.time })
-    renderer.render(program);
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    renderer.render({ program, count: 3 });
     requestAnimationFrame(render);
 }
 

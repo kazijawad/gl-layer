@@ -1,48 +1,30 @@
 export class Renderer {
-    static getContext(versionNumber) {
-        if (versionNumber === 1) {
-            return 'webgl';
-        } else if (versionNumber === 2) {
-            return 'webgl2';
-        }
-    }
-
     constructor({
         canvas = document.createElement('canvas'),
         dpr = Math.min(window.devicePixelRatio, 2),
+        webgl = 1,
         width = 300,
         height = 150,
-        webgl = 1,
     }) {
+        this.element = canvas;
         this.dpr = dpr;
-        this._callbacks = new Map();
+        this.webgl = webgl;
 
-        this.gl = canvas.getContext(Renderer.getContext(webgl));
+        this.gl = canvas.getContext(this.context);
         if (!this.gl) {
             console.error('Failed to create WebGL context.');
         }
-
-        this.createState();
 
         this.setSize(width, height);
         this.setViewport(this.gl.canvas.width, this.gl.canvas.height);
     }
 
-    createState() {
-        this.state = new Proxy({}, {
-            set: async (target, key, value) => {
-                target[key] = value;
-
-                if (this._callbacks.has(key)) {
-                    const callback = this._callbacks.get(key);
-                    await callback(key, value);
-                }
-
-                return true;
-            }
-        });
-
-        this.state.bind = (key, callback) => this._callbacks.set(key, callback);
+    get context() {
+        if (this.webgl === 1) {
+            return 'webgl';
+        } else if (this.webgl === 2) {
+            return 'webgl2';
+        }
     }
 
     setSize(width, height) {
@@ -51,8 +33,8 @@ export class Renderer {
 
         const needResize = width !== displayWidth || height !== displayHeight;
         if (needResize) {
-            this.state.width = this.gl.canvas.width = displayWidth;
-            this.state.height = this.gl.canvas.height = displayHeight;
+            this.gl.canvas.width = displayWidth;
+            this.gl.canvas.height = displayHeight;
         }
 
         return needResize;
@@ -62,11 +44,13 @@ export class Renderer {
         this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
     }
 
-    render(program) {
+    render({ program, mode, start, count }) {
         for (const attribute of program.attributes) {
             const { location, size, type, normalized, stride, offset } = attribute[1];
-            program.gl.enableVertexAttribArray(location);
-            program.gl.vertexAttribPointer(location, size, type, normalized, stride, offset);
+            this.gl.enableVertexAttribArray(location);
+            this.gl.vertexAttribPointer(location, size, type, normalized, stride, offset);
         }
+
+        this.gl.drawArrays(mode || this.gl.TRIANGLES, start || 0, count);
     }
 }

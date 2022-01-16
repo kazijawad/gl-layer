@@ -1,2 +1,5 @@
-export { Program } from './core/program';
-export { Renderer } from './core/renderer';
+export { Program } from './core';
+export { Renderer } from './core';
+export { Texture } from './core';
+
+export { Clock } from './utils';
