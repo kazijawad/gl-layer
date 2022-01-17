@@ -4,7 +4,7 @@ export class Program {
         attributes,
         uniforms,
         vertex,
-        fragment
+        fragment,
     }) {
         this.attributes = new Map();
         this.uniforms = new Map();
