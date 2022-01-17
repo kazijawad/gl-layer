@@ -10,7 +10,6 @@ import { Renderer, Program, Clock } from 'gl-layer';
 const clock = new Clock();
 
 const renderer = new Renderer({
-    canvas: document.querySelector('.stage'),
     width: window.innerWidth,
     height: window.innerHeight,
 });
@@ -48,13 +47,19 @@ const program = new Program({
     `,
 });
 
+addEventListener('resize', handleResize);
+
+render();
+
+function handleResize() {
+    renderer.resize(window.innerWidth, window.innerHeight);
+}
+
 function render() {
     program.setUniforms({ uTime: clock.time })
     renderer.render({ program, count: 3 });
     requestAnimationFrame(render);
 }
-
-render();
 ```
 
 ## Author

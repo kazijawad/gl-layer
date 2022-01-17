@@ -1,1 +1,1 @@
-export { Clock } from './clock';
+export { Clock } from './clock.js';

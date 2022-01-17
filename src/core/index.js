@@ -1,3 +1,3 @@
-export { Program } from './program';
-export { Renderer } from './renderer';
-export { Texture } from './texture';
+export { Program } from './program.js';
+export { Renderer } from './renderer.js';
+export { Texture } from './texture.js';

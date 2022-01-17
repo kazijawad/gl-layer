@@ -1,5 +1,5 @@
-export { Program } from './core';
-export { Renderer } from './core';
-export { Texture } from './core';
+export { Program } from './core/index.js';
+export { Renderer } from './core/index.js';
+export { Texture } from './core/index.js';
 
-export { Clock } from './utils';
+export { Clock } from './utils/index.js';

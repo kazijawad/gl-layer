@@ -10,6 +10,10 @@ export class Renderer {
         this.dpr = dpr;
         this.webgl = webgl;
 
+        if (!document.body.contains(canvas)) {
+            document.body.appendChild(canvas);
+        }
+
         this.gl = canvas.getContext(this.context);
         if (!this.gl) {
             console.error('Failed to create WebGL context.');
@@ -31,7 +35,7 @@ export class Renderer {
         const displayWidth = Math.round(width * this.dpr);
         const displayHeight = Math.round(height * this.dpr);
 
-        const needResize = width !== displayWidth || height !== displayHeight;
+        const needResize = width !== displayWidth || height !== displayHeight || this.gl.canvas.width !== displayWidth || this.gl.canvas.height || displayHeight;
         if (needResize) {
             this.gl.canvas.width = displayWidth;
             this.gl.canvas.height = displayHeight;
@@ -41,7 +45,12 @@ export class Renderer {
     }
 
     setViewport(width, height) {
-        this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
+        this.gl.viewport(0, 0, width, height);
+    }
+
+    resize(width, height) {
+        this.setSize(width, height);
+        this.setViewport(this.gl.canvas.width, this.gl.canvas.height);
     }
 
     render({ program, mode, start, count }) {
