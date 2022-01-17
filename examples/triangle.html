@@ -56,7 +56,7 @@
         }
 
         function render() {
-            program.setUniforms({ uTime: clock.time })
+            program.setUniforms({ uTime: clock.time });
             renderer.render({ program, count: 3 });
             requestAnimationFrame(render);
         }

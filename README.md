@@ -16,9 +16,6 @@ const renderer = new Renderer({
 
 const gl = renderer.gl;
 
-gl.clearColor(0, 0, 0, 0);
-gl.clear(gl.COLOR_BUFFER_BIT);
-
 const program = new Program({
     gl,
     attributes: {
@@ -52,11 +49,11 @@ addEventListener('resize', handleResize);
 render();
 
 function handleResize() {
-    renderer.resize(window.innerWidth, window.innerHeight);
+    renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
 function render() {
-    program.setUniforms({ uTime: clock.time })
+    program.setUniforms({ uTime: clock.time });
     renderer.render({ program, count: 3 });
     requestAnimationFrame(render);
 }
