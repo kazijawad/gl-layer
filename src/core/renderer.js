@@ -1,22 +1,13 @@
 export class Renderer {
-    constructor({
-        canvas = document.createElement('canvas'),
-        dpr = Math.min(window.devicePixelRatio, 2),
-        webgl = 1,
-        width = 300,
-        height = 150,
-        clearColor = true,
-        clearDepth = true,
-        autoClear = true,
-    }) {
+    constructor(canvas = document.createElement('canvas')) {
         this.element = canvas;
-        this.dpr = dpr;
-        this.webgl = webgl;
-        this.width = width;
-        this.height = height;
-        this.clearColor = clearColor;
-        this.clearDepth = clearDepth;
-        this.autoClear = autoClear;
+        this.dpr = Math.min(window.devicePixelRatio, 2);
+        this.webgl = 1;
+        this.width = 300;
+        this.height = 300;
+        this.clearColor = true;
+        this.clearDepth = true;
+        this.autoClear = true;
 
         if (!document.body.contains(canvas)) {
             document.body.appendChild(canvas);
@@ -24,7 +15,7 @@ export class Renderer {
 
         this.gl = canvas.getContext(this.context);
         if (!this.gl) {
-            console.error('Failed to create WebGL context.');
+            throw new Error('Failed to create WebGL context.');
         }
 
         this.setSize(this.width, this.height);
@@ -57,8 +48,8 @@ export class Renderer {
         this.gl.viewport(x, y, width, height);
     }
 
-    render({ program, mode, start, count, clear }) {
-        if (clear || (this.autoClear && !clear)) {
+    render(program) {
+        if (this.autoClear) {
             if (this.clearColor) {
                 this.gl.clearColor(0, 0, 0, 0);
                 this.gl.clear(this.gl.COLOR_BUFFER_BIT);
@@ -75,7 +66,5 @@ export class Renderer {
             this.gl.enableVertexAttribArray(location);
             this.gl.vertexAttribPointer(location, size, type, normalized, stride, offset);
         }
-
-        this.gl.drawArrays(mode || this.gl.TRIANGLES, start || 0, count);
     }
 }

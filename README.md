@@ -5,58 +5,45 @@ A minimal WebGL helper library.
 ## Getting Started
 
 ```JavaScript
-import { Renderer, Program, Clock } from 'gl-layer';
+import { Renderer, Program, Clock } from '../src/index.js';
 
 const clock = new Clock();
 
-const renderer = new Renderer({
-    width: window.innerWidth,
-    height: window.innerHeight,
-});
-
+const renderer = new Renderer();
 const gl = renderer.gl;
 
-const program = new Program({
-    gl,
-    attributes: {
-        position: [-0.25, -0.25, 0, 0.50, 0.25, -0.25],
-    },
-    uniforms: {
-        uColor: [1.0, 1.0, 1.0],
-        uTime: clock.time,
-    },
-    vertex: `
-        attribute vec4 position;
+const vertexSource = `
+    attribute vec4 position;
 
-        void main() {
-            gl_Position = position;
-        }
-    `,
-    fragment: `
-        precision mediump float;
+    void main() {
+        gl_Position = position;
+    }
+`;
 
-        uniform vec3 uColor;
-        uniform float uTime;
+const fragmentSource = `
+    precision mediump float;
 
-        void main() {
-            gl_FragColor = vec4(vec3(sin(uTime), 0.5, cos(uTime)) * uColor, 1.0);
-        }
-    `,
-});
+    uniform vec3 uColor;
+    uniform float uTime;
 
-addEventListener('resize', handleResize);
+    void main() {
+        gl_FragColor = vec4(vec3(sin(uTime), 0.5, cos(uTime)) * uColor, 1.0);
+    }
+`;
 
-render();
-
-function handleResize() {
-    renderer.setSize(window.innerWidth, window.innerHeight);
-}
+const program = new Program(gl, vertexSource, fragmentSource);
+program.setAttribute('position', new Float32Array([-0.50, -0.50, 0, 0.50, 0.50, -0.50]));
+program.setUniform('uColor', new Float32Array([1.0, 1.0, 1.0]));
+program.setUniform('uTime', clock.time);
 
 function render() {
-    program.setUniforms({ uTime: clock.time });
-    renderer.render({ program, count: 3 });
+    program.setUniform('uTime', clock.time);
+    renderer.render(program);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
     requestAnimationFrame(render);
 }
+
+render();
 ```
 
 ## Author
