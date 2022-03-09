@@ -5,7 +5,7 @@ A minimal WebGL helper library.
 ## Getting Started
 
 ```JavaScript
-import { Renderer, Program, Clock } from '../src/index.js';
+import { Renderer, Program, Clock } from 'gl-layer';
 
 const clock = new Clock();
 
@@ -38,7 +38,7 @@ program.setUniform('uTime', clock.time);
 
 function render() {
     program.setUniform('uTime', clock.time);
-    renderer.render(program);
+    renderer.render();
     gl.drawArrays(gl.TRIANGLES, 0, 3);
     requestAnimationFrame(render);
 }
