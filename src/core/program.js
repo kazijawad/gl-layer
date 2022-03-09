@@ -4,8 +4,8 @@ export class Program {
         let errLog;
 
         this.gl = gl;
-        this.attributes = new Map();
-        this.uniforms = new Map();
+        this.attributes = {};
+        this.uniforms = {};
 
         this.vertex = this.gl.createShader(this.gl.VERTEX_SHADER);
         this.gl.shaderSource(this.vertex, vertexSource);
@@ -43,16 +43,19 @@ export class Program {
             this.source = null;
             throw errLog;
         }
-
-        this.gl.useProgram(this.source);
     }
 
     setAttribute(name, value, size = 2, type = this.gl.FLOAT, normalized = false, stride = 0, offset = 0) {
+        this.gl.useProgram(this.source);
+
         const buffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, value, this.gl.STATIC_DRAW);
 
-        this.attributes.set(name, {
+        this.gl.enableVertexAttribArray(location);
+        this.gl.vertexAttribPointer(location, size, type, normalized, stride, offset);
+
+        this.attributes[name] = {
             location: this.gl.getAttribLocation(this.source, name),
             buffer,
             value,
@@ -61,13 +64,15 @@ export class Program {
             normalized,
             stride,
             offset
-        });
+        };
     }
 
     setUniform(name, value) {
         if (typeof value === 'number') {
             value = [value];
         }
+
+        this.gl.useProgram(this.source);
 
         const location = this.gl.getUniformLocation(this.source, name);
 
@@ -90,6 +95,6 @@ export class Program {
             throw new Error('Program::setUniform — Invalid Format', name, value);
         }
 
-        this.uniforms.set(name, { value });
+        this.uniforms[name] = { value };
     }
 }

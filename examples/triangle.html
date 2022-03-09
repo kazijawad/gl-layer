@@ -39,9 +39,11 @@
         program.setUniform('uColor', new Float32Array([1.0, 1.0, 1.0]));
         program.setUniform('uTime', clock.time);
 
+        console.log(program);
+
         function render() {
             program.setUniform('uTime', clock.time);
-            renderer.render(program);
+            renderer.render();
             gl.drawArrays(gl.TRIANGLES, 0, 3);
             requestAnimationFrame(render);
         }

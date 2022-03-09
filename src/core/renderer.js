@@ -48,7 +48,7 @@ export class Renderer {
         this.gl.viewport(x, y, width, height);
     }
 
-    render(program) {
+    render() {
         if (this.autoClear) {
             if (this.clearColor) {
                 this.gl.clearColor(0, 0, 0, 0);
@@ -59,12 +59,6 @@ export class Renderer {
                 this.gl.enable(this.gl.DEPTH_TEST);
                 this.gl.clear(this.gl.DEPTH_BUFFER_BIT);
             }
-        }
-
-        for (const attribute of program.attributes) {
-            const { location, size, type, normalized, stride, offset } = attribute[1];
-            this.gl.enableVertexAttribArray(location);
-            this.gl.vertexAttribPointer(location, size, type, normalized, stride, offset);
         }
     }
 }
