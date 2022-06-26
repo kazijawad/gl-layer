@@ -5,7 +5,7 @@ export class Program {
         this.vertexSource = vertexSource;
         this.fragmentSource = fragmentSource;
 
-        this.uniforms = [];
+        this.uniforms = {};
     }
 
     use(gl) {
@@ -53,26 +53,30 @@ export class Program {
 
         gl.useProgram(this.source);
 
-        for (const uniform of this.uniforms) {
-            const [name, value] = uniform;
+        for (const name of Object.keys(this.uniforms)) {
+            const uniform = this.uniforms[name];
+            if (uniform.needsUpdate) {
+                const value = uniform.value;
+                const location = gl.getUniformLocation(this.source, name);
 
-            const location = gl.getUniformLocation(this.source, name);
+                if (value instanceof Vector2) {
+                    gl.uniform2fv(location, value.buffer);
+                } else if (value instanceof Vector3) {
+                    gl.uniform3fv(location, value.buffer);
+                } else if (value instanceof Vector4) {
+                    gl.uniform4fv(location, value.buffer);
+                } else if (typeof value === 'number' && !Number.isInteger(value)) {
+                    gl.uniform1f(location, value);
+                } else {
+                    throw new Error('PROGRAM::UNIFORM::INVALID_INPUT');
+                }
 
-            if (value instanceof Vector2) {
-                gl.uniform2fv(location, value.buffer);
-            } else if (value instanceof Vector3) {
-                gl.uniform3fv(location, value.buffer);
-            } else if (value instanceof Vector4) {
-                gl.uniform4fv(location, value.buffer);
-            } else if (typeof value === 'number' && !Number.isInteger(value)) {
-                gl.uniform1f(location, value);
-            } else {
-                throw new Error('PROGRAM::UNIFORM::INVALID_INPUT');
+                uniform.needsUpdate = false;
             }
         }
     }
 
     setUniform(name, value) {
-        this.uniforms.push([name, value]);
+        this.uniforms[name] = { value, needsUpdate: true };
     }
 }
