@@ -1,13 +1,16 @@
 export class Renderer {
     constructor(canvas = document.createElement('canvas')) {
         this.element = canvas;
+
+        this.webgl = 2;
         this.dpr = Math.min(window.devicePixelRatio, 2);
-        this.webgl = 1;
+
         this.width = 300;
         this.height = 300;
+
+        this.autoClear = true;
         this.clearColor = true;
         this.clearDepth = true;
-        this.autoClear = true;
 
         if (!document.body.contains(canvas)) {
             document.body.appendChild(canvas);
@@ -15,7 +18,7 @@ export class Renderer {
 
         this.gl = canvas.getContext(this.context);
         if (!this.gl) {
-            throw new Error('Failed to create WebGL context.');
+            throw new Error('RENDERER::CONTEXT::FAILED');
         }
 
         this.setSize(this.width, this.height);
@@ -48,7 +51,7 @@ export class Renderer {
         this.gl.viewport(x, y, width, height);
     }
 
-    render() {
+    render(scene) {
         if (this.autoClear) {
             if (this.clearColor) {
                 this.gl.clearColor(0, 0, 0, 0);
@@ -59,6 +62,10 @@ export class Renderer {
                 this.gl.enable(this.gl.DEPTH_TEST);
                 this.gl.clear(this.gl.DEPTH_BUFFER_BIT);
             }
+        }
+
+        for (const object of scene.children) {
+            object.draw(this.gl);
         }
     }
 }
