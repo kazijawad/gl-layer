@@ -1,5 +1,3 @@
-import { Vector2Array } from '../math/Vector2Array.js';
-
 export class Geometry {
     constructor(vertices) {
         this.drawRange = {};
