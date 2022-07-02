@@ -8,7 +8,6 @@ export class Renderer {
         this.width = 300;
         this.height = 300;
 
-        this.autoClear = true;
         this.clearColor = true;
         this.clearDepth = true;
 
@@ -22,13 +21,18 @@ export class Renderer {
         }
 
         this.setSize(this.width, this.height);
+        this.depthTest = true;
     }
 
     get context() {
-        if (this.webgl === 1) {
-            return 'webgl';
-        } else if (this.webgl === 2) {
-            return 'webgl2';
+        return 'webgl2';
+    }
+
+    set depthTest(value) {
+        if (value) {
+            this.gl.enable(this.gl.DEPTH_TEST);
+        } else {
+            this.gl.disable(this.gl.DEPTH_TEST);
         }
     }
 
@@ -52,16 +56,13 @@ export class Renderer {
     }
 
     render(scene) {
-        if (this.autoClear) {
-            if (this.clearColor) {
-                this.gl.clearColor(0, 0, 0, 0);
-                this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-            }
+        if (this.clearColor) {
+            this.gl.clearColor(0, 0, 0, 0);
+            this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+        }
 
-            if (this.clearDepth) {
-                this.gl.enable(this.gl.DEPTH_TEST);
-                this.gl.clear(this.gl.DEPTH_BUFFER_BIT);
-            }
+        if (this.clearDepth) {
+            this.gl.clear(this.gl.DEPTH_BUFFER_BIT);
         }
 
         for (const object of scene.children) {
