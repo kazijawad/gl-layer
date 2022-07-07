@@ -9,6 +9,8 @@ export class Mesh extends Transform {
     }
 
     draw(gl) {
+        this.updateWorldMatrix();
+
         this.program.use(gl);
         this.geometry.draw(gl);
 

@@ -5,7 +5,7 @@ A minimal WebGL2 3D library.
 ## Getting Started
 
 ```JavaScript
-import { Clock, Renderer, Transform, Mesh, Geometry, Program, Attribute, Vector3 } from '../src/index.js';
+import { Clock, Renderer, Transform, Mesh, Geometry, Program, Attribute, Vector3 } from 'gl-layer';
 
 const clock = new Clock();
 
