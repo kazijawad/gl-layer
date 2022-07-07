@@ -1,10 +1,22 @@
+import { Attribute } from '../math/Attribute.js';
+
 export class Geometry {
-    constructor(vertices) {
+    constructor(position, normal, uv) {
         this.drawRange = {};
         this.attributes = [];
 
-        this.setDrawRange(0, vertices.drawCount);
-        this.setAttribute(0, vertices);
+        if (position instanceof Attribute) {
+            this.setDrawRange(0, position.drawCount);
+            this.setAttribute(0, position);
+        }
+
+        if (normal instanceof Attribute) {
+            this.setAttribute(1, normal);
+        }
+
+        if (uv instanceof Attribute) {
+            this.setAttribute(2, uv);
+        }
     }
 
     setDrawRange(first, count) {

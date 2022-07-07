@@ -1,29 +1,51 @@
-export class Vector4 {
-    constructor(x = 0, y = 0, z = 0, w = 0) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.w = w;
+export class Vector4 extends Array {
+    constructor(x = 0, y = x, z = x, w = x) {
+        super(x, y, z, w);
 
-        this.buffer = new Float32Array([this.x, this.y, this.z, this.w]);
-        this.usage = WebGL2RenderingContext.STATIC_DRAW;
-
-        this.size = this.buffer.length;
-        this.type = WebGL2RenderingContext.FLOAT;
-        this.normalized = false;
-        this.stride = 0;
-        this.offset = 0;
+        this.buffer = new Float32Array([x, y, z, w]);
     }
 
     static from(x, y, z, w) {
         return new Vector4(x, y, z, w);
     }
 
+    get x() {
+        return this[0];
+    }
+
+    get y() {
+        return this[1];
+    }
+
+    get z() {
+        return this[2];
+    }
+
+    get w() {
+        return this[3];
+    }
+
+    set x(v) {
+        this[0] = v;
+    }
+
+    set y(v) {
+        this[1] = v;
+    }
+
+    set z(v) {
+        this[2] = v;
+    }
+
+    set w(v) {
+        this[3] = v;
+    }
+
     clone() {
         return new Vector4(this.x, this.y, this.z, this.w);
     }
 
-    length() {
+    magnitude() {
         return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w);
     }
 
@@ -54,6 +76,6 @@ export class Vector4 {
     }
 
     normalize() {
-        return this.divide(this.length() || 1);
+        return this.divide(this.magnitude() || 1);
     }
 }

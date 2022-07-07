@@ -1,28 +1,43 @@
-export class Vector3 {
-    constructor(x = 0, y = 0, z = 0) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+export class Vector3 extends Array {
+    constructor(x = 0, y = x, z = x) {
+        super(x, y, z);
 
-        this.buffer = new Float32Array([this.x, this.y, this.z]);
-        this.usage = WebGL2RenderingContext.STATIC_DRAW;
-
-        this.size = this.buffer.length;
-        this.type = WebGL2RenderingContext.FLOAT;
-        this.normalized = false;
-        this.stride = 0;
-        this.offset = 0;
+        this.buffer = new Float32Array([x, y, z]);
     }
 
     static from(x, y, z) {
         return new Vector3(x, y, z);
     }
 
+    get x() {
+        return this[0];
+    }
+
+    get y() {
+        return this[1];
+    }
+
+    get z() {
+        return this[2];
+    }
+
+    set x(v) {
+        this[0] = v;
+    }
+
+    set y(v) {
+        this[1] = v;
+    }
+
+    set z(v) {
+        this[2] = v;
+    }
+
     clone() {
         return new Vector3(this.x, this.y, this.z);
     }
 
-    length() {
+    magnitude() {
         return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
     }
 
@@ -50,7 +65,7 @@ export class Vector3 {
     }
 
     normalize() {
-        return this.divide(this.length() || 1);
+        return this.divide(this.magnitude() || 1);
     }
 
     cross(b) {

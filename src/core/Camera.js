@@ -1,5 +1,5 @@
-import { Vector3 } from '../core/math/Vector3';
-import { MathUtils } from '../core/utils/MathUtils';
+import { Vector3 } from '../math/Vector3.js';
+import { MathUtils } from '../utils/MathUtils.js';
 
 export class Camera {
     constructor(position, yaw = -90, pitch = 0) {
@@ -15,10 +15,10 @@ export class Camera {
         this.up = new Vector3(0, 1, 0);
         this.front = new Vector3(0, 0, -1);
 
-        this.updateProjection();
+        this.update();
     }
 
-    updateProjection() {
+    update() {
         const direction = new Vector3();
         direction.x = Math.cos(MathUtils.Radian(this.yaw)) * Math.cos(MathUtils.Radian(this.pitch));
         direction.y = Math.sin(MathUtils.Radian(this.pitch));

@@ -1,27 +1,35 @@
-export class Vector2 {
-    constructor(x = 0, y = 0) {
-        this.x = x;
-        this.y = y;
+export class Vector2 extends Array {
+    constructor(x = 0, y = x) {
+        super(x, y);
 
-        this.buffer = new Float32Array([this.x, this.y]);
-        this.usage = WebGL2RenderingContext.STATIC_DRAW;
-
-        this.size = this.buffer.length;
-        this.type = WebGL2RenderingContext.FLOAT;
-        this.normalized = false;
-        this.stride = 0;
-        this.offset = 0;
+        this.buffer = new Float32Array([x, y]);
     }
 
     static from(x, y) {
         return new Vector2(x, y);
     }
 
+    get x() {
+        return this[0];
+    }
+
+    get y() {
+        return this[1];
+    }
+
+    set x(v) {
+        this[0] = v;
+    }
+
+    set y(v) {
+        this[1] = v;
+    }
+
     clone() {
         return new Vector2(this.x, this.y);
     }
 
-    length() {
+    magnitude() {
         return Math.sqrt(this.x * this.x + this.y * this.y);
     }
 
@@ -46,6 +54,6 @@ export class Vector2 {
     }
 
     normalize() {
-        return this.divide(this.length() || 1);
+        return this.divide(this.magnitude() || 1);
     }
 }
