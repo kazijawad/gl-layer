@@ -5,7 +5,7 @@ A minimal WebGL2 3D library.
 ## Getting Started
 
 ```JavaScript
-import { Renderer, Transform, Mesh, Geometry, Program, Vector2Array, Vector3, Clock } from 'gl-layer';
+import { Clock, Renderer, Transform, Mesh, Geometry, Program, Attribute, Vector3 } from '../src/index.js';
 
 const clock = new Clock();
 
@@ -34,10 +34,10 @@ const frag = `#version 300 es
 
 const scene = new Transform();
 
-const geometry = new Geometry(new Vector2Array([-0.50, -0.50, 0, 0.50, 0.50, -0.50]));
+const geometry = new Geometry(Attribute.from([-0.50, -0.50, 0, 0.50, 0.50, -0.50], 2));
 
 const program = new Program(vert, frag);
-program.setUniform('uColor', new Vector3(1.0, 1.0, 1.0));
+program.setUniform('uColor', Vector3.from(1.0, 1.0, 1.0));
 program.setUniform('uTime', clock.time);
 
 const mesh = new Mesh(geometry, program);
