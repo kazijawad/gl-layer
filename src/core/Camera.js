@@ -7,14 +7,12 @@ class Camera extends Transform {
         super();
 
         this.viewMatrix = new Matrix4();
-        this.projectionViewMatrix = new Matrix4();
     }
 
     updateWorldMatrix() {
         super.updateWorldMatrix();
 
         this.viewMatrix.inverse(this.worldMatrix);
-        this.projectionViewMatrix = Matrix4.multiply(this.projectionMatrix, this.viewMatrix);
     }
 
     lookAt(v) {

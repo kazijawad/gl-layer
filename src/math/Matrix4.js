@@ -1,4 +1,5 @@
 import { Vector3 } from './Vector3.js';
+import { MathUtils } from '../utils/MathUtils.js';
 
 export class Matrix4 extends Array {
     constructor(
@@ -39,27 +40,29 @@ export class Matrix4 extends Array {
     }
 
     static perspective(fov, aspect, near, far) {
-        const f = Math.tan(Math.PI * 0.5 - 0.5 * fov);
-        const rangeInverted = 1.0 / (near - far);
+        const top = near * Math.tan(MathUtils.Radian(fov) / 2);
+        const bottom = -top;
+        const right = top * aspect;
+        const left = -right;
 
         return Matrix4.from(
-            f / aspect, 0,                              0,  0,
-                     0, f,                              0,  0,
-                     0, 0,   (near + far) * rangeInverted, -1,
-                     0, 0, near * far * rangeInverted * 2,  0,
+                          2 * near / (right - left),                                       0,                             0,  0,
+                                                  0,               2 * near / (top - bottom),                             0,  0,
+                                                  0,                                       0,  -(far + near) / (far - near), -1,
+            -near * (right + left) / (right - left), -near * (top + bottom) / (top - bottom), 2 * far * near / (near - far),  0,
         );
     }
 
     static lookAt(position, target, up) {
-        const zAxis = position.clone().subtract(target).normalize();
-        const xAxis = up.clone().cross(zAxis).normalize();
-        const yAxis = zAxis.clone().cross(xAxis).normalize();
+        const Z = position.clone().subtract(target).normalize();
+        const X = up.clone().cross(Z).normalize();
+        const Y = Z.clone().cross(X).normalize();
 
         return Matrix4.from(
-               xAxis[0],    xAxis[1],    xAxis[2], 0,
-               yAxis[0],    yAxis[1],    yAxis[2], 0,
-               zAxis[0],    zAxis[1],    zAxis[2], 0,
-            position[0], position[1], position[2], 1,
+                   X.x,        X.y,        X.z, 0,
+                   Y.x,        Y.y,        Y.z, 0,
+                   Z.x,        Z.y,        Z.z, 0,
+            position.x, position.y, position.z, 1,
         );
     }
 
@@ -108,23 +111,23 @@ export class Matrix4 extends Array {
     }
 
     static multiply(a, b) {
-        const b00 = b[0 * 4 + 0]; const b01 = b[0 * 4 + 1]; const b02 = b[0 * 4 + 2]; const b03 = b[0 * 4 + 3];
-        const b10 = b[1 * 4 + 0]; const b11 = b[1 * 4 + 1]; const b12 = b[1 * 4 + 2]; const b13 = b[1 * 4 + 3];
-        const b20 = b[2 * 4 + 0]; const b21 = b[2 * 4 + 1]; const b22 = b[2 * 4 + 2]; const b23 = b[2 * 4 + 3];
-        const b30 = b[3 * 4 + 0]; const b31 = b[3 * 4 + 1]; const b32 = b[3 * 4 + 2]; const b33 = b[3 * 4 + 3];
+        const b00 = b[ 0]; const b01 = b[ 1]; const b02 = b[ 2]; const b03 = b[ 3];
+        const b10 = b[ 4]; const b11 = b[ 5]; const b12 = b[ 6]; const b13 = b[ 7];
+        const b20 = b[ 8]; const b21 = b[ 9]; const b22 = b[10]; const b23 = b[11];
+        const b30 = b[12]; const b31 = b[13]; const b32 = b[14]; const b33 = b[15];
 
-        const a00 = a[0 * 4 + 0]; const a01 = a[0 * 4 + 1]; const a02 = a[0 * 4 + 2]; const a03 = a[0 * 4 + 3];
-        const a10 = a[1 * 4 + 0]; const a11 = a[1 * 4 + 1]; const a12 = a[1 * 4 + 2]; const a13 = a[1 * 4 + 3];
-        const a20 = a[2 * 4 + 0]; const a21 = a[2 * 4 + 1]; const a22 = a[2 * 4 + 2]; const a23 = a[2 * 4 + 3];
-        const a30 = a[3 * 4 + 0]; const a31 = a[3 * 4 + 1]; const a32 = a[3 * 4 + 2]; const a33 = a[3 * 4 + 3];
+        const a00 = a[ 0]; const a01 = a[ 1]; const a02 = a[ 2]; const a03 = a[ 3];
+        const a10 = a[ 4]; const a11 = a[ 5]; const a12 = a[ 6]; const a13 = a[ 7];
+        const a20 = a[ 8]; const a21 = a[ 9]; const a22 = a[10]; const a23 = a[11];
+        const a30 = a[12]; const a31 = a[13]; const a32 = a[14]; const a33 = a[15];
 
         const c = new Matrix4();
-        
+
         c[ 0] = b00 * a00 + b01 * a10 + b02 * a20 + b03 * a30;
         c[ 1] = b00 * a01 + b01 * a11 + b02 * a21 + b03 * a31;
         c[ 2] = b00 * a02 + b01 * a12 + b02 * a22 + b03 * a32;
         c[ 3] = b00 * a03 + b01 * a13 + b02 * a23 + b03 * a33;
-        
+
         c[ 4] = b10 * a00 + b11 * a10 + b12 * a20 + b13 * a30;
         c[ 5] = b10 * a01 + b11 * a11 + b12 * a21 + b13 * a31;
         c[ 6] = b10 * a02 + b11 * a12 + b12 * a22 + b13 * a32;
@@ -150,6 +153,15 @@ export class Matrix4 extends Array {
             this[ 8], this[ 9], this[10], this[11],
             this[12], this[13], this[14], this[15],
         ]);
+    }
+
+    clone() {
+        return new Matrix4(
+            this[ 0], this[ 1], this[ 2], this[ 3],
+            this[ 4], this[ 5], this[ 6], this[ 7],
+            this[ 8], this[ 9], this[10], this[11],
+            this[12], this[13], this[14], this[15],
+        );
     }
 
     copy(m) {
@@ -213,7 +225,7 @@ export class Matrix4 extends Array {
     }
 
     translation() {
-        return Vector3.from(this[12], this[13], this[14]);
+        return Vector3.from(this[3], this[7], this[11]);
     }
 
     rotation() {
@@ -224,7 +236,11 @@ export class Matrix4 extends Array {
             this[ 8] / s.x, this[ 9] / s.y, this[10] / s.z, 0,
                          0,              0,              0, 1,
         );
-        return Vector3.from();
+        return Vector3.from(
+            Math.atan2( R[6],                                             R[10]),
+            Math.atan2(-R[2], Math.sqrt(Math.pow(R[6], 2) + Math.pow(R[10], 2))),
+            Math.atan2( R[1],                                              R[0]),
+        );
     }
 
     scale() {
@@ -233,5 +249,15 @@ export class Matrix4 extends Array {
             Vector3.from(this[1], this[5], this[ 9]).magnitude(),
             Vector3.from(this[2], this[6], this[10]).magnitude(),
         );
+    }
+
+    debug() {
+        const A = this.clone();
+        console.log('');
+        console.log(A[ 0], A[ 1], A[ 2], A[ 3]);
+        console.log(A[ 4], A[ 5], A[ 6], A[ 7]);
+        console.log(A[ 8], A[ 9], A[10], A[11]);
+        console.log(A[12], A[13], A[14], A[15]);
+        console.log('');
     }
 }
