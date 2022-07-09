@@ -1,6 +1,7 @@
 import { Vector2 } from '../math/Vector2.js';
 import { Vector3 } from '../math/Vector3.js';
 import { Vector4 } from '../math/Vector4.js';
+import { Matrix3 } from '../math/Matrix3.js';
 import { Matrix4 } from '../math/Matrix4.js';
 
 export class Program {
@@ -68,6 +69,8 @@ export class Program {
                     gl.uniform3fv(location, value.buffer);
                 } else if (value instanceof Vector4) {
                     gl.uniform4fv(location, value.buffer);
+                } else if (value instanceof Matrix3) {
+                    gl.uniformMatrix3fv(location, false, value.buffer);
                 } else if (value instanceof Matrix4) {
                     gl.uniformMatrix4fv(location, false, value.buffer);
                 } else if (typeof value === 'number' && !Number.isInteger(value)) {

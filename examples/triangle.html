@@ -37,7 +37,11 @@
 
         const scene = new Transform();
 
-        const geometry = new Geometry(Attribute.from([-0.50, -0.50, 0, 0.50, 0.50, -0.50], 2));
+        const geometry = new Geometry(Attribute.from([
+            -0.50, -0.50,
+                0,  0.50,
+             0.50, -0.50
+        ], 2));
 
         const program = new Program(vert, frag);
         program.setUniform('uColor', Vector3.from(1.0, 1.0, 1.0));

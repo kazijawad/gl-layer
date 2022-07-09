@@ -1,6 +1,6 @@
 {
     "name": "gl-layer",
-    "description": "A 3D WebGL2 library.",
+    "description": "A minimal 3D WebGL2 library.",
     "version": "0.0.1",
     "license": "MIT",
     "author": "Kazi Jawad",

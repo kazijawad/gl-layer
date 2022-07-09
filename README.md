@@ -1,51 +1,149 @@
 # gl-layer
 
-A 3D WebGL2 library.
+A minimal 3D WebGL2 library.
 
 ## Getting Started
 
 ```JavaScript
-import { Clock, Renderer, Transform, Mesh, Geometry, Program, Attribute, Vector3 } from 'gl-layer';
+import { Clock, Renderer, PerspectiveCamera, Transform, Mesh, Geometry, Program, Attribute, Vector3 } from 'gl-layer';
 
 const clock = new Clock();
 
 const renderer = new Renderer();
 
 const vert = `#version 300 es
-    layout (location = 0) in vec4 position;
+    layout (location = 0) in vec3 position;
+    layout (location = 1) in vec3 normal;
+
+    uniform mat4 model;
+    uniform mat4 view;
+    uniform mat4 projection;
+    uniform mat3 normalMatrix;
+
+    out vec3 vNormal;
 
     void main() {
-        gl_Position = position;
+        vNormal = normalMatrix * normal;
+        gl_Position = projection * view * model * vec4(position, 1.0);
     }
 `;
 
 const frag = `#version 300 es
     precision mediump float;
 
-    uniform vec3 uColor;
-    uniform float uTime;
+    in vec3 vNormal;
 
     out vec4 fragColor;
 
     void main() {
-        fragColor = vec4(vec3(sin(uTime), 0.5, cos(uTime)) * uColor, 1.0);
+        fragColor = vec4(vNormal, 1.0);
     }
 `;
 
 const scene = new Transform();
 
-const geometry = new Geometry(Attribute.from([-0.50, -0.50, 0, 0.50, 0.50, -0.50], 2));
+const camera = new PerspectiveCamera(45, renderer.width / renderer.height, 1, 1000);
+camera.position = new Vector3(0, 0, 10);
+
+const position = Attribute.from([
+    -1.0, -1.0, -1.0,
+     1.0,  1.0, -1.0,
+     1.0, -1.0, -1.0,
+     1.0,  1.0, -1.0,
+    -1.0, -1.0, -1.0,
+    -1.0,  1.0, -1.0,
+
+    -1.0, -1.0,  1.0,
+     1.0, -1.0,  1.0,
+     1.0,  1.0,  1.0,
+     1.0,  1.0,  1.0,
+    -1.0,  1.0,  1.0,
+    -1.0, -1.0,  1.0,
+
+    -1.0,  1.0,  1.0,
+    -1.0,  1.0, -1.0,
+    -1.0, -1.0, -1.0,
+    -1.0, -1.0, -1.0,
+    -1.0, -1.0,  1.0,
+    -1.0,  1.0,  1.0,
+
+     1.0,  1.0,  1.0,
+     1.0, -1.0, -1.0,
+     1.0,  1.0, -1.0,
+     1.0, -1.0, -1.0,
+     1.0,  1.0,  1.0,
+     1.0, -1.0,  1.0,
+
+    -1.0, -1.0, -1.0,
+     1.0, -1.0, -1.0,
+     1.0, -1.0,  1.0,
+     1.0, -1.0,  1.0,
+    -1.0, -1.0,  1.0,
+    -1.0, -1.0, -1.0,
+
+    -1.0,  1.0, -1.0,
+     1.0,  1.0 , 1.0,
+     1.0,  1.0, -1.0,
+     1.0,  1.0,  1.0,
+    -1.0,  1.0, -1.0,
+    -1.0,  1.0,  1.0,
+], 3);
+
+const normal = Attribute.from([
+     0.0,  0.0, -1.0,
+     0.0,  0.0, -1.0, 
+     0.0,  0.0, -1.0, 
+     0.0,  0.0, -1.0, 
+     0.0,  0.0, -1.0, 
+     0.0,  0.0, -1.0, 
+
+     0.0,  0.0, 1.0,
+     0.0,  0.0, 1.0,
+     0.0,  0.0, 1.0,
+     0.0,  0.0, 1.0,
+     0.0,  0.0, 1.0,
+     0.0,  0.0, 1.0,
+
+    -1.0,  0.0,  0.0,
+    -1.0,  0.0,  0.0,
+    -1.0,  0.0,  0.0,
+    -1.0,  0.0,  0.0,
+    -1.0,  0.0,  0.0,
+    -1.0,  0.0,  0.0,
+
+     1.0,  0.0,  0.0,
+     1.0,  0.0,  0.0,
+     1.0,  0.0,  0.0,
+     1.0,  0.0,  0.0,
+     1.0,  0.0,  0.0,
+     1.0,  0.0,  0.0,
+
+     0.0, -1.0,  0.0,
+     0.0, -1.0,  0.0,
+     0.0, -1.0,  0.0,
+     0.0, -1.0,  0.0,
+     0.0, -1.0,  0.0,
+     0.0, -1.0,  0.0,
+
+     0.0,  1.0,  0.0,
+     0.0,  1.0,  0.0,
+     0.0,  1.0,  0.0,
+     0.0,  1.0,  0.0,
+     0.0,  1.0,  0.0,
+     0.0,  1.0,  0.0
+], 3);
+
+const geometry = new Geometry(position, normal);
 
 const program = new Program(vert, frag);
-program.setUniform('uColor', Vector3.from(1.0, 1.0, 1.0));
-program.setUniform('uTime', clock.time);
 
 const mesh = new Mesh(geometry, program);
 scene.add(mesh);
 
 function render() {
-    program.setUniform('uTime', clock.time);
-    renderer.render(scene);
+    mesh.rotation.x = clock.time;
+    mesh.rotation.y = clock.time;
+    renderer.render(scene, camera);
     requestAnimationFrame(render);
 }
 
