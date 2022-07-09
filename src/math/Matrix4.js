@@ -228,10 +228,10 @@ export class Matrix4 extends Array {
     }
 
     inverse(m) {
-        const m00 = m[0 * 4 + 0]; const m01 = m[0 * 4 + 1]; const m02 = m[0 * 4 + 2]; const m03 = m[0 * 4 + 3];
-        const m10 = m[1 * 4 + 0]; const m11 = m[1 * 4 + 1]; const m12 = m[1 * 4 + 2]; const m13 = m[1 * 4 + 3];
-        const m20 = m[2 * 4 + 0]; const m21 = m[2 * 4 + 1]; const m22 = m[2 * 4 + 2]; const m23 = m[2 * 4 + 3];
-        const m30 = m[3 * 4 + 0]; const m31 = m[3 * 4 + 1]; const m32 = m[3 * 4 + 2]; const m33 = m[3 * 4 + 3];
+        const m00 = m[ 0]; const m01 = m[ 1]; const m02 = m[ 2]; const m03 = m[ 3];
+        const m10 = m[ 4]; const m11 = m[ 5]; const m12 = m[ 6]; const m13 = m[ 7];
+        const m20 = m[ 8]; const m21 = m[ 9]; const m22 = m[10]; const m23 = m[11];
+        const m30 = m[12]; const m31 = m[13]; const m32 = m[14]; const m33 = m[15];
 
         const t00 = m22 * m33; const t01 = m32 * m23; const t02 = m12 * m33; const t03 = m32 * m13;
         const t04 = m12 * m23; const t05 = m22 * m13; const t06 = m02 * m33; const t07 = m32 * m03;
@@ -245,27 +245,27 @@ export class Matrix4 extends Array {
         const t2 = (t02 * m01 + t07 * m11 + t10 * m31) - (t03 * m01 + t06 * m11 + t11 * m31);
         const t3 = (t05 * m01 + t08 * m11 + t11 * m21) - (t04 * m01 + t09 * m11 + t10 * m21);
 
-        const d = 1.0 / (m00 * t0 + m10 * t1 + m20 * t2 + m30 * t3);
+        const det = 1.0 / (m00 * t0 + m10 * t1 + m20 * t2 + m30 * t3);
 
-        this[ 0] = d * t0;
-        this[ 1] = d * t1;
-        this[ 2] = d * t2;
-        this[ 3] = d * t3;
+        this[ 0] = det * t0;
+        this[ 1] = det * t1;
+        this[ 2] = det * t2;
+        this[ 3] = det * t3;
 
-        this[ 4] = d * ((t01 * m10 + t02 * m20 + t05 * m30) - (t00 * m10 + t03 * m20 + t04 * m30));
-        this[ 5] = d * ((t00 * m00 + t07 * m20 + t08 * m30) - (t01 * m00 + t06 * m20 + t09 * m30));
-        this[ 6] = d * ((t03 * m00 + t06 * m10 + t11 * m30) - (t02 * m00 + t07 * m10 + t10 * m30));
-        this[ 7] = d * ((t04 * m00 + t09 * m10 + t10 * m20) - (t05 * m00 + t08 * m10 + t11 * m20));
+        this[ 4] = det * ((t01 * m10 + t02 * m20 + t05 * m30) - (t00 * m10 + t03 * m20 + t04 * m30));
+        this[ 5] = det * ((t00 * m00 + t07 * m20 + t08 * m30) - (t01 * m00 + t06 * m20 + t09 * m30));
+        this[ 6] = det * ((t03 * m00 + t06 * m10 + t11 * m30) - (t02 * m00 + t07 * m10 + t10 * m30));
+        this[ 7] = det * ((t04 * m00 + t09 * m10 + t10 * m20) - (t05 * m00 + t08 * m10 + t11 * m20));
 
-        this[ 8] = d * ((t12 * m13 + t15 * m23 + t16 * m33) - (t13 * m13 + t14 * m23 + t17 * m33));
-        this[ 9] = d * ((t13 * m03 + t18 * m23 + t21 * m33) - (t12 * m03 + t19 * m23 + t20 * m33));
-        this[10] = d * ((t14 * m03 + t19 * m13 + t22 * m33) - (t15 * m03 + t18 * m13 + t23 * m33));
-        this[11] = d * ((t17 * m03 + t20 * m13 + t23 * m23) - (t16 * m03 + t21 * m13 + t22 * m23));
+        this[ 8] = det * ((t12 * m13 + t15 * m23 + t16 * m33) - (t13 * m13 + t14 * m23 + t17 * m33));
+        this[ 9] = det * ((t13 * m03 + t18 * m23 + t21 * m33) - (t12 * m03 + t19 * m23 + t20 * m33));
+        this[10] = det * ((t14 * m03 + t19 * m13 + t22 * m33) - (t15 * m03 + t18 * m13 + t23 * m33));
+        this[11] = det * ((t17 * m03 + t20 * m13 + t23 * m23) - (t16 * m03 + t21 * m13 + t22 * m23));
 
-        this[12] = d * ((t14 * m22 + t17 * m32 + t13 * m12) - (t16 * m32 + t12 * m12 + t15 * m22));
-        this[13] = d * ((t20 * m32 + t12 * m02 + t19 * m22) - (t18 * m22 + t21 * m32 + t13 * m02));
-        this[14] = d * ((t18 * m12 + t23 * m32 + t15 * m02) - (t22 * m32 + t14 * m02 + t19 * m12));
-        this[15] = d * ((t22 * m22 + t16 * m02 + t21 * m12) - (t20 * m12 + t23 * m22 + t17 * m02));
+        this[12] = det * ((t14 * m22 + t17 * m32 + t13 * m12) - (t16 * m32 + t12 * m12 + t15 * m22));
+        this[13] = det * ((t20 * m32 + t12 * m02 + t19 * m22) - (t18 * m22 + t21 * m32 + t13 * m02));
+        this[14] = det * ((t18 * m12 + t23 * m32 + t15 * m02) - (t22 * m32 + t14 * m02 + t19 * m12));
+        this[15] = det * ((t22 * m22 + t16 * m02 + t21 * m12) - (t20 * m12 + t23 * m22 + t17 * m02));
 
         return this;
     }

@@ -143,6 +143,10 @@
         const mesh = new Mesh(geometry, program);
         scene.add(mesh);
 
+        window.addEventListener('resize', handleResize);
+
+        render();
+
         function render() {
             mesh.rotation.x = clock.time;
             mesh.rotation.y = clock.time;
@@ -150,7 +154,12 @@
             requestAnimationFrame(render);
         }
 
-        render();
+        function handleResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
     </script>
 </body>
 </html>

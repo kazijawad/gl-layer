@@ -25,7 +25,18 @@ export class OrthographicCamera extends Camera {
     constructor(left, right, bottom, top, near, far) {
         super();
 
-        this.projectionMatrix = Matrix4.orthographic(left, right, bottom, top, near, far);
+        this.left = left;
+        this.right = right;
+        this.bottom = bottom;
+        this.top = top;
+        this.near = near;
+        this.far = far;
+
+        this.projectionMatrix = Matrix4.orthographic(this.left, this.right, this.bottom, this.top, this.near, this.far);
+    }
+
+    updateProjectionMatrix() {
+        this.projectionMatrix = Matrix4.orthographic(this.left, this.right, this.bottom, this.top, this.near, this.far);
     }
 }
 
@@ -33,6 +44,15 @@ export class PerspectiveCamera extends Camera {
     constructor(fov, aspect, near, far) {
         super();
 
-        this.projectionMatrix = Matrix4.perspective(fov, aspect, near, far);
+        this.fov = fov;
+        this.aspect = aspect;
+        this.near = near;
+        this.far = far;
+
+        this.projectionMatrix = Matrix4.perspective(this.fov, this.aspect, this.near, this.far);
+    }
+
+    updateProjectionMatrix() {
+        this.projectionMatrix = Matrix4.perspective(this.fov, this.aspect, this.near, this.far);
     }
 }
