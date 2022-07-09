@@ -1,4 +1,4 @@
-export { Camera } from './core/Camera.js';
+export { OrthographicCamera, PerspectiveCamera } from './core/Camera.js';
 export { Geometry } from './core/Geometry.js';
 export { Mesh } from './core/Mesh.js';
 export { Program } from './core/Program.js';

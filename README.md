@@ -1,6 +1,6 @@
 # gl-layer
 
-A minimal WebGL2 3D library.
+A 3D WebGL2 library.
 
 ## Getting Started
 
@@ -51,7 +51,3 @@ function render() {
 
 render();
 ```
-
-## Author
-
-[Kazi Jawad](https://github.com/kazijawad)

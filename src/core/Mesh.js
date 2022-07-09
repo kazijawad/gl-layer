@@ -8,8 +8,14 @@ export class Mesh extends Transform {
         this.program = program;
     }
 
-    draw(gl) {
+    draw(gl, camera) {
         this.updateWorldMatrix();
+
+        if (camera) {
+            this.program.setUniform('model', this.worldMatrix);
+            this.program.setUniform('view', camera.viewMatrix);
+            this.program.setUniform('projection', camera.projectionMatrix);
+        }
 
         this.program.use(gl);
         this.geometry.draw(gl);

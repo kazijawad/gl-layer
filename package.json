@@ -1,9 +1,10 @@
 {
     "name": "gl-layer",
-    "description": "A minimal WebGL helper library.",
+    "description": "A 3D WebGL2 library.",
     "version": "0.0.1",
     "license": "MIT",
     "author": "Kazi Jawad",
+    "type": "module",
     "main": "src/index.js",
     "repository": {
         "type": "git",
@@ -12,5 +13,11 @@
     "bugs": {
         "url": "https://github.com/kazijawad/gl-layer/issues"
     },
-    "homepage": "https://github.com/kazijawad/gl-layer#readme"
+    "homepage": "https://github.com/kazijawad/gl-layer#readme",
+    "scripts": {
+        "dev": "vite"
+    },
+    "devDependencies": {
+        "vite": "^2.9.14"
+    }
 }

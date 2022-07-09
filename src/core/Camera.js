@@ -1,31 +1,40 @@
+import { Transform } from './Transform.js';
+import { Matrix4 } from '../math/Matrix4.js';
 import { Vector3 } from '../math/Vector3.js';
-import { MathUtils } from '../utils/MathUtils.js';
 
-export class Camera {
-    constructor(position, yaw = -90, pitch = 0) {
-        this.position = position;
+class Camera extends Transform {
+    constructor() {
+        super();
 
-        this.yaw = yaw;
-        this.pitch = pitch;
-
-        this.speed = 2.5;
-        this.sensitivity = 0.1;
-        this.zoom = 45;
-
-        this.up = new Vector3(0, 1, 0);
-        this.front = new Vector3(0, 0, -1);
-
-        this.update();
+        this.viewMatrix = new Matrix4();
+        this.projectionViewMatrix = new Matrix4();
     }
 
-    update() {
-        const direction = new Vector3();
-        direction.x = Math.cos(MathUtils.Radian(this.yaw)) * Math.cos(MathUtils.Radian(this.pitch));
-        direction.y = Math.sin(MathUtils.Radian(this.pitch));
-        direction.z = Math.sin(MathUtils.Radian(this.yaw)) * Math.cos(MathUtils.Radian(this.pitch));
+    updateWorldMatrix() {
+        super.updateWorldMatrix();
 
-        this.front = direction.normalize();
-        this.right = this.front.cross(this.up).normalize();
-        this.up = this.right.cross(this.front).normalize();
+        this.viewMatrix.inverse(this.worldMatrix);
+        this.projectionViewMatrix = Matrix4.multiply(this.projectionMatrix, this.viewMatrix);
     }
-};
+
+    lookAt(v) {
+        this.localMatrix = Matrix4.lookAt(this.position, v, Vector3.from(0, 1, 0));
+        this.rotation = this.localMatrix.rotation();
+    }
+}
+
+export class OrthographicCamera extends Camera {
+    constructor(left, right, bottom, top, near, far) {
+        super();
+
+        this.projectionMatrix = Matrix4.orthographic(left, right, bottom, top, near, far);
+    }
+}
+
+export class PerspectiveCamera extends Camera {
+    constructor(fov, aspect, near, far) {
+        super();
+
+        this.projectionMatrix = Matrix4.perspective(fov, aspect, near, far);
+    }
+}

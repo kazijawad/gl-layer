@@ -5,8 +5,8 @@ export class Renderer {
         this.webgl = 2;
         this.dpr = Math.min(window.devicePixelRatio, 2);
 
-        this.width = 300;
-        this.height = 300;
+        this.width = window.innerWidth;
+        this.height = window.innerHeight;
 
         this.clearColor = true;
         this.clearDepth = true;
@@ -55,7 +55,7 @@ export class Renderer {
         this.gl.viewport(x, y, width, height);
     }
 
-    render(scene) {
+    render(scene, camera) {
         if (this.clearColor) {
             this.gl.clearColor(0, 0, 0, 0);
             this.gl.clear(this.gl.COLOR_BUFFER_BIT);
@@ -65,8 +65,12 @@ export class Renderer {
             this.gl.clear(this.gl.DEPTH_BUFFER_BIT);
         }
 
+        if (camera) {
+            camera.updateWorldMatrix();
+        }
+
         for (const object of scene.children) {
-            object.draw(this.gl);
+            object.draw(this.gl, camera);
         }
     }
 }

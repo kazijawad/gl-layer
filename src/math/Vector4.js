@@ -1,8 +1,6 @@
 export class Vector4 extends Array {
     constructor(x = 0, y = x, z = x, w = x) {
         super(x, y, z, w);
-
-        this.buffer = new Float32Array([x, y, z, w]);
     }
 
     static from(x, y, z, w) {
@@ -23,6 +21,10 @@ export class Vector4 extends Array {
 
     get w() {
         return this[3];
+    }
+
+    get buffer() {
+        return Float32Array.from([this.x, this.y, this.z, this.w]);
     }
 
     set x(v) {
@@ -47,6 +49,22 @@ export class Vector4 extends Array {
 
     magnitude() {
         return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w);
+    }
+
+    add(v) {
+        this.x += v.x;
+        this.y += v.y;
+        this.z += v.z;
+        this.w += v.w;
+        return this;
+    }
+
+    subtract(v) {
+        this.x -= v.x;
+        this.y -= v.y;
+        this.z -= v.z;
+        this.w -= v.w;
+        return this;
     }
 
     multiply(v) {
