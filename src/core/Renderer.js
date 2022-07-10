@@ -1,3 +1,9 @@
+import { Transform } from './Transform.js';
+import { Mesh } from './Mesh.js';
+import { Geometry } from './Geometry.js';
+import { Program } from './Program.js';
+import { Attribute } from '../math/Attribute.js';
+
 export class Renderer {
     constructor(canvas = document.createElement('canvas')) {
         this.element = canvas;
@@ -65,12 +71,20 @@ export class Renderer {
             this.gl.clear(this.gl.DEPTH_BUFFER_BIT);
         }
 
-        if (camera) {
-            camera.updateWorldMatrix();
+        if (scene instanceof Transform && !camera) {
+            throw new Error('RENDERER::RENDER::NO_CAMERA');
         }
 
-        for (const object of scene.children) {
-            object.draw(this.gl, camera);
+        if (scene instanceof Program) {
+            const geometry = new Geometry(Attribute.from([-1, -1, -1, 3, 3, -1], 2));
+            const mesh = new Mesh(geometry, scene);
+            mesh.draw(this.gl);
+        } else if (camera) {
+            camera.updateWorldMatrix();
+
+            for (const object of scene.children) {
+                object.draw(this.gl, camera);
+            }
         }
     }
 }
