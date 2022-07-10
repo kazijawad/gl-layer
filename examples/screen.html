@@ -14,14 +14,6 @@
 
         const renderer = new Renderer();
 
-        const vert = `#version 300 es
-            layout (location = 0) in vec4 position;
-
-            void main() {
-                gl_Position = position;
-            }
-        `;
-
         const frag = `#version 300 es
             precision mediump float;
 
@@ -34,7 +26,7 @@
             }
         `;
 
-        const program = new Program(vert, frag);
+        const program = new Program(frag);
         program.setUniform('uTime', clock.time);
 
         function render() {

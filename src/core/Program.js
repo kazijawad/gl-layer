@@ -6,6 +6,17 @@ import { Matrix4 } from '../math/Matrix4.js';
 
 export class Program {
     constructor(vertexSource, fragmentSource) {
+        if (!fragmentSource) {
+            fragmentSource = vertexSource;
+            vertexSource = `#version 300 es
+                layout (location = 0) in vec4 position;
+
+                void main() {
+                    gl_Position = position;
+                }
+            `;
+        }
+
         this.vertexSource = vertexSource;
         this.fragmentSource = fragmentSource;
 
