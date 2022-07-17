@@ -3,6 +3,7 @@ import { Vector3 } from '../math/Vector3.js';
 import { Vector4 } from '../math/Vector4.js';
 import { Matrix3 } from '../math/Matrix3.js';
 import { Matrix4 } from '../math/Matrix4.js';
+import { Texture } from './Texture.js';
 
 export class Program {
     constructor(vertexSource, fragmentSource) {
@@ -21,6 +22,7 @@ export class Program {
         this.fragmentSource = fragmentSource;
 
         this.uniforms = {};
+        this.textureUnit = 0;
     }
 
     use(gl) {
@@ -68,30 +70,36 @@ export class Program {
 
         gl.useProgram(this.source);
 
-        for (const name of Object.keys(this.uniforms)) {
+        const filteredUniforms = Object.keys(this.uniforms).filter((k) => this.uniforms[k].needsUpdate);
+        for (const name of filteredUniforms) {
             const uniform = this.uniforms[name];
-            if (uniform.needsUpdate) {
-                const value = uniform.value;
-                const location = gl.getUniformLocation(this.source, name);
 
-                if (value instanceof Vector2) {
-                    gl.uniform2fv(location, value.buffer);
-                } else if (value instanceof Vector3) {
-                    gl.uniform3fv(location, value.buffer);
-                } else if (value instanceof Vector4) {
-                    gl.uniform4fv(location, value.buffer);
-                } else if (value instanceof Matrix3) {
-                    gl.uniformMatrix3fv(location, false, value.buffer);
-                } else if (value instanceof Matrix4) {
-                    gl.uniformMatrix4fv(location, false, value.buffer);
-                } else if (typeof value === 'number' && !Number.isInteger(value)) {
-                    gl.uniform1f(location, value);
-                } else {
-                    throw new Error('PROGRAM::UNIFORM::INVALID_INPUT');
-                }
+            const value = uniform.value;
+            const location = gl.getUniformLocation(this.source, name);
 
-                uniform.needsUpdate = false;
+            if (value instanceof Vector2) {
+                gl.uniform2fv(location, value.buffer);
+            } else if (value instanceof Vector3) {
+                gl.uniform3fv(location, value.buffer);
+            } else if (value instanceof Vector4) {
+                gl.uniform4fv(location, value.buffer);
+            } else if (value instanceof Matrix3) {
+                gl.uniformMatrix3fv(location, false, value.buffer);
+            } else if (value instanceof Matrix4) {
+                gl.uniformMatrix4fv(location, false, value.buffer);
+            } else if (value instanceof Texture) {
+                value.use(gl);
+                gl.uniform1i(location, this.textureUnit);
+                this.textureUnit++;
+            } else if (typeof value === 'number' && !Number.isInteger(value)) {
+                gl.uniform1f(location, value);
+            } else if (typeof value === 'number' && Number.isInteger(value)) {
+                gl.uniform1i(location, value);
+            } else {
+                throw new Error(`PROGRAM::UNIFORM::INVALID_INPUT::${value}`);
             }
+
+            uniform.needsUpdate = false;
         }
     }
 

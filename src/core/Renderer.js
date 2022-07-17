@@ -3,6 +3,7 @@ import { Mesh } from './Mesh.js';
 import { Geometry } from './Geometry.js';
 import { Program } from './Program.js';
 import { Attribute } from '../math/Attribute.js';
+import { Vector2 } from '../math/Vector2.js';
 
 export class Renderer {
     constructor(canvas = document.createElement('canvas')) {
@@ -78,6 +79,11 @@ export class Renderer {
         if (scene instanceof Program) {
             const geometry = new Geometry(Attribute.from([-1, -1, -1, 3, 3, -1], 2));
             const mesh = new Mesh(geometry, scene);
+
+            if (!scene.uniforms.resolution) {
+                scene.setUniform('resolution', Vector2.from(this.width, this.height));
+            }
+
             mesh.draw(this.gl);
         } else if (camera) {
             camera.updateWorldMatrix();

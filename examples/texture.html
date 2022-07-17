@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>gl-layer / Full Screen Shader</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+    <script type="module">
+        import { Clock, Renderer, Program, Texture } from 'gl-layer';
+
+        const clock = new Clock();
+
+        const renderer = new Renderer();
+
+        const frag = `#version 300 es
+            precision mediump float;
+
+            uniform vec2 resolution;
+            uniform sampler2D map;
+
+            out vec4 fragColor;
+
+            void main() {
+                fragColor = texture(map, gl_FragCoord.xy / resolution);
+            }
+        `;
+
+        const program = new Program(frag);
+
+        const image = new Image();
+        image.src = 'assets/strawberries.jpg';
+        image.onload = () => {
+            program.setUniform('map', Texture.from(image));
+        };
+
+        function render() {
+            renderer.render(program);
+            requestAnimationFrame(render);
+        }
+
+        render();
+    </script>
+</body>
+</html>
